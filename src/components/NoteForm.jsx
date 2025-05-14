@@ -1,20 +1,41 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addNote } from "./notesSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addNote, setEditMode, updateNote } from "./notesSlice";
 import { v4 as uuidv4 } from "uuid";
 
 const NoteForm = () => {
+  const notes = useSelector((state) => state.notes.items);
+  const editMode = useSelector((state) => state.notes.editMode);
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const isEditing = editMode !== null;
+
+  useEffect(() => {
+    if (isEditing) {
+      const note = notes.find((note) => note.id === editMode);
+      if (note) {
+        setTitle(note.title);
+        setBody(note.body);
+      } else {
+        setTitle("");
+        setBody("");
+      }
+    }
+  }, [editMode, isEditing, notes]);
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (title.trim() && body.trim()) {
+    if (title.trim() || body.trim()) return;
+
+    if (isEditing) {
+      dispatch(updateNote({ id: editMode, title, body }));
+    } else {
       dispatch(addNote({ id: uuidv4(), title, body }));
-      setTitle("");
-      setBody("");
     }
+    dispatch(setEditMode(null));
+    setTitle("");
+    setBody("");
   }
 
   return (
@@ -35,7 +56,7 @@ const NoteForm = () => {
         onClick={handleSubmit}
         className="w-full max-w-md py-2 text-white font-semibold bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors"
       >
-        Submit
+        {isEditing ? "Save Changes" : "Add Note"}
       </button>
     </form>
   );
