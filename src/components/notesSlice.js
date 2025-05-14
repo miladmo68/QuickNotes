@@ -14,7 +14,7 @@ const notesSlice = createSlice({
       state.items.push(action.payload);
     },
     deleteNote(state, action) {
-      return state.items.filter((note) => note.id !== action.payload);
+      state.items = state.items.filter((note) => note.id !== action.payload);
     },
     updateNote(state, action) {
       const { id, title, body } = action.payload;
@@ -23,6 +23,7 @@ const notesSlice = createSlice({
         note.title = title;
         note.body = body;
       }
+      state.editMode = null;
     },
     setEditMode(state, action) {
       console.log(action.payload);

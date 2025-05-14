@@ -26,7 +26,7 @@ const NoteForm = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (title.trim() || body.trim()) return;
+    if (!title.trim() || !body.trim()) return;
 
     if (isEditing) {
       dispatch(updateNote({ id: editMode, title, body }));
@@ -39,7 +39,10 @@ const NoteForm = () => {
   }
 
   return (
-    <form className="flex flex-col items-center bg-white p-6 gap-4 rounded-xl shadow-lg border border-gray-200">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col items-center bg-white p-6 gap-4 rounded-xl shadow-lg border border-gray-200"
+    >
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -53,7 +56,7 @@ const NoteForm = () => {
         className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
       />
       <button
-        onClick={handleSubmit}
+        type="submit"
         className="w-full max-w-md py-2 text-white font-semibold bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors"
       >
         {isEditing ? "Save Changes" : "Add Note"}
